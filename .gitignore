@@ -24,3 +24,6 @@ dist/
 
 # App theme configuration
 app_config.json
+
+# Assets
+templates/
