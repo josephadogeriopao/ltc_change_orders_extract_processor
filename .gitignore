@@ -1,0 +1,26 @@
+# Virtual Environment
+.venv/
+venv/
+ENV/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Environment variables (Secrets)
+.env
+
+# Database files
+*.db
+
+# --- Added PyInstaller & Packaging Rules ---
+# Workspace compilation artifacts
+build/
+dist/
+
+# PyInstaller metadata tracking sheets
+*.manifest
+*.spec
+
+# App theme configuration
+app_config.json
