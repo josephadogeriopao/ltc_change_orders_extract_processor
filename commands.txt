@@ -1,0 +1,28 @@
+# --- ONE-TIME SETUP ---
+# Create the environment
+python -m venv .venv
+
+# Activate (Windows)
+.venv\Scripts\activate
+
+# Activate (Mac/Linux)
+source .venv/bin/activate
+
+# --- INSTALLING PACKAGES ---
+# OR Install everything from a shared list
+pip install -r requirements.txt
+
+# --- SAVING YOUR PACKAGES TO FILE ---
+# Update whenever you install something new
+pip freeze > requirements.txt
+
+# --- PACKAGING AND DISTRIBUTING APP ---
+python -m PyInstaller --noconsole --onefile --name "address_label_generator" --icon "app_icon.ico" --collect-all customtkinter app.py
+
+# -- THE SYSTEM CLEAN CACHED ASSETS LIKE REPLACED IMAGES ETC. --
+# Delete Your Local PyInstaller Cache
+# To make sure it isn't reuse-loading an old compiled .ico format internally, append the --clean flag to your command:
+python -m PyInstaller --clean --noconsole --onefile --name "address_label_generator" --icon "app_icon.ico" --add-data "app_icon.ico;." --collect-all customtkinter app.py
+
+# --- RUNNING TEST SUITES ---
+python -m unittest test_labels_engine.py
