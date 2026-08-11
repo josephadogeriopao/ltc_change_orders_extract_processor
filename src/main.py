@@ -1,31 +1,86 @@
 import os
-import sys
+from utils.mailmerge import process_change_orders
 
-from dotenv import load_dotenv
+'''
+    Processing Personal Property Change Orders
+'''
+# 1. Setup explicit file configuration parameters
+EXCEL_FILE = os.path.abspath("C:\\Users\\joseph.adogeri\\Desktop\\test\\pp.xls")
+TEMPLATE_DOC = os.path.abspath("../assets/templates/pp.docx")
+OUTPUT_DIR = os.path.abspath("C:\\Users\\joseph.adogeri\\Desktop\\test\\pp_generated_letters")
 
-from src.models.owner import Owner
-from src.utils.convert import convert_txt_to_excel
+# Define the exact 3 files requested for output
+MASTER_DOCX_PATH = os.path.normpath(os.path.join(OUTPUT_DIR, "pp_test_parcel_parcelid.docx"))
+MASTER_PDF_PATH = os.path.normpath(os.path.join(OUTPUT_DIR, "pp_test_parcel_parcelid.pdf"))
+TEST_SAMPLE_PDF_PATH = os.path.normpath(os.path.join(OUTPUT_DIR, "pp_test_file.pdf"))
 
-# Load the variables from the local .env file
-load_dotenv()
+word_app = None
 
-txt_file = os.environ.get("TXT_FILE", r"PATH TO PDF FILE")
+try:
+    # Run the extracted engine function
+    word_app = process_change_orders(
+        excel_file=EXCEL_FILE,
+        template_doc=TEMPLATE_DOC,
+        output_dir=OUTPUT_DIR,
+        master_docx_path=MASTER_DOCX_PATH,
+        master_pdf_path=MASTER_PDF_PATH,
+        test_sample_pdf_path=TEST_SAMPLE_PDF_PATH
+    )
 
-def main() -> None:
-    # Defensive check: Ensure both environment variables exist before running
-    if not all([txt_file]):
-        print("❌ Error: Missing configuration paths in your .env file or fallbacks!")
-        return
+    print("\n✅ Success! Each letter inside the master document has been stamped with its own unique barcode.")
 
-    print("\nStarting Generating LTC Change Orders Service...")
-    print(f"-> text file: {txt_file}")
-    print("Finished Generating LTC Change Orders Service...")
+except FileNotFoundError:
+    print(f"❌ Error: Missing assets. Ensure paths to Excel and Word are correct.")
+except Exception as e:
+    print(f"❌ A fatal runtime disruption occurred: {e}")
 
-    saved_at : str = convert_txt_to_excel(txt_file)
+finally:
+    # Clean up Word COM automation state safely
+    if word_app is not None:
+        try:
+            word_app.Quit()
+            print("Word Application shutdown complete.")
+        except Exception:
+            pass
 
-    print(f"File automatically saved to: {saved_at}")
+'''
+    Processing Real Property Change Orders
+'''
+# 1. Setup explicit file configuration parameters
+EXCEL_FILE = os.path.abspath("C:\\Users\\joseph.adogeri\\Desktop\\test\\real.xls")
+TEMPLATE_DOC = os.path.abspath("../assets/templates/real.docx")
+OUTPUT_DIR = os.path.abspath("C:\\Users\\joseph.adogeri\\Desktop\\test\\real_generated_letters")
 
+# Define the exact 3 files requested for output
+MASTER_DOCX_PATH = os.path.normpath(os.path.join(OUTPUT_DIR, "real_test_parcel_parcelid.docx"))
+MASTER_PDF_PATH = os.path.normpath(os.path.join(OUTPUT_DIR, "real_test_parcel_parcelid.pdf"))
+TEST_SAMPLE_PDF_PATH = os.path.normpath(os.path.join(OUTPUT_DIR, "real_test_file.pdf"))
 
-if __name__ == "__main__":
-    main()
-    sys.exit(0)
+word_app = None
+
+try:
+    # Run the extracted engine function
+    word_app = process_change_orders(
+        excel_file=EXCEL_FILE,
+        template_doc=TEMPLATE_DOC,
+        output_dir=OUTPUT_DIR,
+        master_docx_path=MASTER_DOCX_PATH,
+        master_pdf_path=MASTER_PDF_PATH,
+        test_sample_pdf_path=TEST_SAMPLE_PDF_PATH
+    )
+
+    print("\n✅ Success! Each letter inside the master document has been stamped with its own unique barcode.")
+
+except FileNotFoundError:
+    print(f"❌ Error: Missing assets. Ensure paths to Excel and Word are correct.")
+except Exception as e:
+    print(f"❌ A fatal runtime disruption occurred: {e}")
+
+finally:
+    # Clean up Word COM automation state safely
+    if word_app is not None:
+        try:
+            word_app.Quit()
+            print("Word Application shutdown complete.")
+        except Exception:
+            pass
