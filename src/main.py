@@ -1,7 +1,10 @@
 import os
 import sys
 from dotenv import load_dotenv
-from utils.mailmerge import process_change_orders
+
+# Import the centralized constants and pipeline runner
+from models.constants import PropertyType
+from pipeline import run_pipeline
 
 def main():
     # 1. Automatically load configurations into environment workspace memory
@@ -9,149 +12,39 @@ def main():
 
     # 2. Extract configuration tokens with programmatic fallback protections
     data_file_raw = os.getenv("DATA_FILE")
-    template_doc_raw = os.getenv("TEMPLATE_DOC")
     output_dir_raw = os.getenv("OUTPUT_DIR")
-
-    master_docx_name = os.getenv("MASTER_DOCX_NAME")
-    master_pdf_name = os.getenv("MASTER_PDF_NAME")
-    test_sample_pdf_name = os.getenv("TEST_SAMPLE_PDF_NAME")
+    property_type_raw = os.getenv("PROPERTY_TYPE")  # e.g., "PERSONAL" or "REAL"
 
     # Safe structural assertion step ensuring no key metrics are missing
-    if not all([data_file_raw, template_doc_raw, output_dir_raw, master_docx_name, master_pdf_name, test_sample_pdf_name]):
+    if not all([data_file_raw, output_dir_raw, property_type_raw]):
         print("❌ Critical System Launch Fault: Active variables mapping is incomplete in .env configuration layout.")
+        print("👉 Ensure DATA_FILE, OUTPUT_DIR, and PROPERTY_TYPE are defined.")
         sys.exit(1)
 
-    # 3. Handle explicit system paths resolution
-    data_file = os.path.abspath(data_file_raw)
-    template_doc = os.path.abspath(template_doc_raw)
-    output_dir = os.path.abspath(output_dir_raw)
+    # 3. Resolve absolute paths safely
+    target_data_file = os.path.abspath(data_file_raw)
+    chosen_base_dir = os.path.abspath(output_dir_raw)
 
-    master_docx_path = os.path.normpath(os.path.join(output_dir, master_docx_name))
-    master_pdf_path = os.path.normpath(os.path.join(output_dir, master_pdf_name))
-    test_sample_pdf_path = os.path.normpath(os.path.join(output_dir, test_sample_pdf_name))
-
-    print("=" * 80)
-    print(f"🚀 Initializing Change Order Framework Run Instance")
-    print(f"   > Data Source Target:  {data_file}")
-    print(f"   > Output Destination: {output_dir}")
-    print("=" * 80)
-
-    word_app = None
-
+    # 4. Map the string from .env to the correct PropertyType Enum class reference
     try:
-        # 4. Trigger processing framework engine exactly once
-        word_app = process_change_orders(
-            excel_file=data_file,
-            template_doc=template_doc,
-            output_dir=output_dir,
-            master_docx_path=master_docx_path,
-            master_pdf_path=master_pdf_path,
-            test_sample_pdf_path=test_sample_pdf_path
-        )
+        target_property_type = PropertyType[property_type_raw.upper()]
+    except KeyError:
+        valid_types = [t.name for t in PropertyType]
+        print(f"❌ Launch Fault: Invalid PROPERTY_TYPE '{property_type_raw}' provided in .env file.")
+        print(f"👉 Choose one of the following exact options: {valid_types}")
+        sys.exit(1)
 
-        print("\n✅ Success! Pipeline completed layout mapping tasks successfully.")
+    # 5. File target execution guard verification step
+    if not os.path.exists(target_data_file):
+        print(f"❌ Launch Fault: Source data file does not exist at location: {target_data_file}")
+        sys.exit(1)
 
-    except FileNotFoundError:
-        print("\n❌ Error: Processing sequence dropped due to missing data file assets.")
-    except Exception as e:
-        print(f"\n❌ A fatal runtime disruption occurred during processing loop: {e}")
-
-    finally:
-        # 5. Clean up Word COM automation state safely
-        if word_app is not None:
-            try:
-                word_app.Quit()
-                print("🔒 Word Application background wrapper shutdown complete.")
-            except Exception:
-                pass
+    # 6. Boot the detached pipeline runner context loop
+    run_pipeline(
+        excel_file_path=target_data_file,
+        property_type=target_property_type,
+        base_output_dir=chosen_base_dir
+    )
 
 if __name__ == "__main__":
     main()
-
-
-# import os
-# from utils.mailmerge import process_change_orders
-#
-# '''
-#     Processing Personal Property Change Orders
-# '''
-# # 1. Setup explicit file configuration parameters
-# EXCEL_FILE = os.path.abspath("C:\\Users\\joseph.adogeri\\Desktop\\test\\pp.xls")
-# TEMPLATE_DOC = os.path.abspath("../assets/templates/pp.docx")
-# OUTPUT_DIR = os.path.abspath("C:\\Users\\joseph.adogeri\\Desktop\\test\\pp_generated_letters")
-#
-# # Define the exact 3 files requested for output
-# MASTER_DOCX_PATH = os.path.normpath(os.path.join(OUTPUT_DIR, "pp_test_parcel_parcelid.docx"))
-# MASTER_PDF_PATH = os.path.normpath(os.path.join(OUTPUT_DIR, "pp_test_parcel_parcelid.pdf"))
-# TEST_SAMPLE_PDF_PATH = os.path.normpath(os.path.join(OUTPUT_DIR, "pp_test_file.pdf"))
-#
-# word_app = None
-#
-# try:
-#     # Run the extracted engine function
-#     word_app = process_change_orders(
-#         excel_file=EXCEL_FILE,
-#         template_doc=TEMPLATE_DOC,
-#         output_dir=OUTPUT_DIR,
-#         master_docx_path=MASTER_DOCX_PATH,
-#         master_pdf_path=MASTER_PDF_PATH,
-#         test_sample_pdf_path=TEST_SAMPLE_PDF_PATH
-#     )
-#
-#     print("\n✅ Success! Each letter inside the master document has been stamped with its own unique barcode.")
-#
-# except FileNotFoundError:
-#     print(f"❌ Error: Missing assets. Ensure paths to Excel and Word are correct.")
-# except Exception as e:
-#     print(f"❌ A fatal runtime disruption occurred: {e}")
-#
-# finally:
-#     # Clean up Word COM automation state safely
-#     if word_app is not None:
-#         try:
-#             word_app.Quit()
-#             print("Word Application shutdown complete.")
-#         except Exception:
-#             pass
-#
-# '''
-#     Processing Real Property Change Orders
-# '''
-# # 1. Setup explicit file configuration parameters
-# EXCEL_FILE = os.path.abspath("C:\\Users\\joseph.adogeri\\Desktop\\test\\real.xls")
-# TEMPLATE_DOC = os.path.abspath("../assets/templates/real.docx")
-# OUTPUT_DIR = os.path.abspath("C:\\Users\\joseph.adogeri\\Desktop\\test\\real_generated_letters")
-#
-# # Define the exact 3 files requested for output
-# MASTER_DOCX_PATH = os.path.normpath(os.path.join(OUTPUT_DIR, "real_test_parcel_parcelid.docx"))
-# MASTER_PDF_PATH = os.path.normpath(os.path.join(OUTPUT_DIR, "real_test_parcel_parcelid.pdf"))
-# TEST_SAMPLE_PDF_PATH = os.path.normpath(os.path.join(OUTPUT_DIR, "real_test_file.pdf"))
-#
-# word_app = None
-#
-# try:
-#     # Run the extracted engine function
-#     word_app = process_change_orders(
-#         excel_file=EXCEL_FILE,
-#         template_doc=TEMPLATE_DOC,
-#         output_dir=OUTPUT_DIR,
-#         master_docx_path=MASTER_DOCX_PATH,
-#         master_pdf_path=MASTER_PDF_PATH,
-#         test_sample_pdf_path=TEST_SAMPLE_PDF_PATH
-#     )
-#
-#     print("\n✅ Success! Each letter inside the master document has been stamped with its own unique barcode.")
-#
-# except FileNotFoundError:
-#     print(f"❌ Error: Missing assets. Ensure paths to Excel and Word are correct.")
-# except Exception as e:
-#     print(f"❌ A fatal runtime disruption occurred: {e}")
-#
-# finally:
-#     # Clean up Word COM automation state safely
-#     if word_app is not None:
-#         try:
-#             word_app.Quit()
-#             print("Word Application shutdown complete.")
-#         except Exception:
-#             pass
