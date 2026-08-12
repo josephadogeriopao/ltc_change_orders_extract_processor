@@ -1,4 +1,16 @@
-# src/converter.py
+"""
+Source Data Ingestion Template Converter
+-----------------------------------------
+Description: Parses raw pipeline text files, strips unneeded keys, truncates data
+             overflow columns, and compiles structured openpyxl data maps.
+
+Author: Joseph Adogeri
+Version: 1.0.0
+Since: 2026-08-12
+File: converter.py
+License: MIT
+"""
+
 import csv
 import os
 import openpyxl
