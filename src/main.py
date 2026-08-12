@@ -3,7 +3,7 @@ import sys
 from dotenv import load_dotenv
 
 # Import the centralized constants and pipeline runner
-from models.constants import PropertyType
+from constants.job_config import PropertyType
 from pipeline import run_pipeline
 
 def main():

@@ -15,42 +15,11 @@ sys.path.append(BASE_APP_DIR)
 # Import legacy processing systems
 from utils.converter import convert_txt_to_excel
 from pipeline import run_pipeline
-from models.constants import PropertyType
+from constants.job_config import PropertyType
 
 # Import decoupled UI layer
 from utils.ui_components import AppUILayer
-
-
-# --- FIXED THREAD-SAFE STREAM INTERCEPTOR LAYER ---
-class TextRedirector:
-    """Safely intercepts standard system print calls and routes them into the CTkTextbox."""
-
-    def __init__(self, textbox_widget, app_context):
-        self.textbox = textbox_widget
-        self.app = app_context
-
-    def write(self, string):
-        if string:  # Ignore completely empty strings
-            # Safely schedule the text insertion onto the main GUI thread loop
-            self.app.after(0, lambda: self._safe_append(string))
-
-    def _safe_append(self, string):
-        try:
-            self.textbox.configure(state="normal")
-            self.textbox.insert("end", string)
-            self.textbox.see("end")  # Dynamic auto-scroll to the bottom of the box
-            self.textbox.configure(state="disabled")
-
-            # ⚡ CRITICAL FIX: Force the UI to refresh its text layout instantly
-            self.textbox.update_idletasks()
-        except Exception:
-            pass
-
-    def flush(self):
-        pass  # Required for Python standard stream buffer compatibility
-
-
-# --------------------------------------------------
+from utils.text_redirector import TextRedirector
 
 
 class ChangeOrderApp(ctk.CTk):

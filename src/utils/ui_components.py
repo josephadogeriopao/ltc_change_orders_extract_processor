@@ -2,7 +2,7 @@ import os
 import datetime
 import customtkinter as ctk
 
-from src.models.constants import PropertyType
+from src.constants.job_config import PropertyType
 
 
 class AppUILayer:
