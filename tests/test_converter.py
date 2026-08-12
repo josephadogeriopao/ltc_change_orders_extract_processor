@@ -13,7 +13,7 @@ import unittest
 import openpyxl
 
 # Absolute tracking path injection to import from src/ layout seamlessly
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src")))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../src", "src")))
 from utils.converter import convert_txt_to_excel
 
 
