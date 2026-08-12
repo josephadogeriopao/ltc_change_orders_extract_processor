@@ -25,5 +25,6 @@ dist/
 # App theme configuration
 app_config.json
 
-# Assets
-templates/
+# Logs
+pipeline_errors.log
+
