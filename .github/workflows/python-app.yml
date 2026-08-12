@@ -1,0 +1,35 @@
+name: Run LTC Change Orders Extract Processor Unit Tests
+
+# Controls when the action will run
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  run-tests:
+    # Use the latest stable Ubuntu Linux environment provided by GitHub
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Clone your repository files onto the GitHub virtual server
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Step 2: Provision a clean Python 3.12 environment on the machine
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # Step 3: Upgrade pip and install all project dependencies cleanly
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      # Step 4: Execute Python's built-in unit test module against your test file
+      - name: Run Tests via Unittest
+        run: |
+          python -m unittest discover -s . -p "test_*.py"

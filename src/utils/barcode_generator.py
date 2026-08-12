@@ -1,3 +1,16 @@
+"""
+Job Configuration and Registry Blueprint
+-----------------------------------------
+Description: Defines centralized property configuration tracking types and uses
+             an execution-aware resolver to safely bind document template assets.
+
+Author: Joseph Adogeri
+Version: 1.0.0
+Since: 2026-08-03
+File: job_config.py / constants.py
+License: MIT
+"""
+
 import os
 from docx import Document
 from docx.shared import Inches
