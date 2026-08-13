@@ -1,3 +1,17 @@
+"""
+Data Ingestion Loader Engine
+----------------------------
+Description: Core file extraction module that dynamically processes JSON, XLS,
+             and XLSX files into uniform Python record dictionaries.
+
+Author: Joseph Adogeri
+Version: 1.0.0
+Since: 2026-08-13
+File: data_loader.py
+License: MIT
+"""
+
+
 import json
 import pandas as pd
 
